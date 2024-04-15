@@ -5,22 +5,12 @@
 	import flash.events.*;
 	import flash.utils.*;
 	import flash.net.*;
-	import ocean.midi.MidiFile;
 	import org.si.sion.SiONDriver;
-	import org.si.sion.SiONData;
 	import org.si.sion.utils.SiONPresetVoice;
-	import org.si.sion.SiONVoice;
-	import org.si.sion.sequencer.SiMMLTrack;
 	import org.si.sion.effector.*;
 	import org.si.sion.events.*;
 	import flash.filesystem.*;
 	import flash.net.FileFilter;
-	import flash.system.Capabilities;
-	CONFIG::web
-	{
-		import flash.external.ExternalInterface;
-		import mx.utils.Base64Encoder;
-	}
 	
 	public class control extends Sprite
 	{
@@ -257,13 +247,10 @@
 			_driver.play(null, false);
 			
 			startup = 1;
-			CONFIG::desktop
+			if (invokefile != "null")
 			{
-				if (invokefile != "null")
-				{
-					invokeceol(invokefile);
-					invokefile = "null";
-				}
+				invokeceol(invokefile);
+				invokefile = "null";
 			}
 		}
 		
@@ -1617,226 +1604,196 @@
 		}
 		
 		// File stuff
-		
-		CONFIG::desktop
+		public static function fileHasExtension(file:File, extension:String):Boolean
 		{
-			
-			public static function fileHasExtension(file:File, extension:String):Boolean
+			if (!file.extension || file.extension.toLowerCase() != extension)
 			{
-				if (!file.extension || file.extension.toLowerCase() != extension)
-				{
-					return false;
-				}
-				return true;
+				return false;
 			}
-			
-			public static function addExtensionToFile(file:File, extension:String):void
-			{
-				file.url += "." + extension;
-			}
-			
-			public static function saveceol():void
-			{
-				if (!filepath)
-				{
-					filepath = defaultDirectory;
-				}
-				file = filepath.resolvePath("*.ceol");
-				file.addEventListener(Event.SELECT, onsaveceol);
-				file.browseForSave("Save .ceol File");
-				
-				fixmouseclicks = true;
-			}
-			
-			private static function onsaveceol(e:Event):void
-			{
-				file = e.currentTarget as File;
-				
-				if (!fileHasExtension(file, "ceol"))
-				{
-					addExtensionToFile(file, "ceol");
-				}
-				
-				makefilestring();
-				
-				stream = new FileStream();
-				stream.open(file, FileMode.WRITE);
-				stream.writeUTFBytes(filestring);
-				stream.close();
-				
-				fixmouseclicks = true;
-				showmessage("SONG SAVED");
-				savefilesettings();
-			}
-			
-			public static function loadceol():void
-			{
-				if (!filepath)
-				{
-					filepath = defaultDirectory;
-				}
-				file = filepath.resolvePath("");
-				file.addEventListener(Event.SELECT, onloadceol);
-				file.browseForOpen("Load .ceol File", [ceolFilter]);
-				
-				fixmouseclicks = true;
-			}
-			
-			public static function invokeceol(t:String):void
-			{
-				file = new File();
-				file.nativePath = t;
-				
-				stream = new FileStream();
-				stream.open(file, FileMode.READ);
-				filestring = stream.readUTFBytes(stream.bytesAvailable);
-				stream.close();
-				
-				loadfilestring(filestring);
-				_driver.play(null, false);
-				
-				fixmouseclicks = true;
-				showmessage("SONG LOADED");
-			}
-			
-			private static function onloadceol(e:Event):void
-			{
-				file = e.currentTarget as File;
-				filepath = file.resolvePath("");
-				
-				stream = new FileStream();
-				stream.open(file, FileMode.READ);
-				filestring = stream.readUTFBytes(stream.bytesAvailable);
-				stream.close();
-				
-				loadfilestring(filestring);
-				_driver.play(null, false);
-				
-				fixmouseclicks = true;
-				showmessage("SONG LOADED");
-				savefilesettings();
-			}
-			
-			public static function exportxm():void
-			{
-				stopmusic();
-				
-				if (!filepath)
-				{
-					filepath = defaultDirectory;
-				}
-				file = filepath.resolvePath("*.xm");
-				file.addEventListener(Event.SELECT, onexportxm);
-				file.browseForSave("Export .XM module file");
-				
-				fixmouseclicks = true;
-			}
-			
-			private static function onexportxm(e:Event):void
-			{
-				file = e.currentTarget as File;
-				
-				if (!fileHasExtension(file, "xm"))
-				{
-					addExtensionToFile(file, "xm");
-				}
-				
-				var xm:TrackerModuleXM = new TrackerModuleXM();
-				xm.loadFromLiveBoscaCeoilModel(file.name);
-				
-				stream = new FileStream();
-				stream.open(file, FileMode.WRITE);
-				xm.writeToStream(stream);
-				stream.close();
-				
-				fixmouseclicks = true;
-				showmessage("SONG EXPORTED AS XM");
-				savefilesettings();
-			}
-			
-			public static function exportmml():void
-			{
-				stopmusic();
-				
-				if (!filepath)
-				{
-					filepath = defaultDirectory;
-				}
-				file = filepath.resolvePath("*.mml");
-				file.addEventListener(Event.SELECT, onexportmml);
-				file.browseForSave("Export MML music text file");
-				
-				fixmouseclicks = true;
-			}
-			
-			private static function onexportmml(e:Event):void
-			{
-				file = e.currentTarget as File;
-				
-				if (!fileHasExtension(file, "mml"))
-				{
-					addExtensionToFile(file, "mml");
-				}
-				
-				var song:MMLSong = new MMLSong();
-				song.loadFromLiveBoscaCeoilModel();
-				
-				stream = new FileStream();
-				stream.open(file, FileMode.WRITE);
-				song.writeToStream(stream);
-				stream.close();
-				
-				fixmouseclicks = true;
-				showmessage("SONG EXPORTED AS MML");
-				savefilesettings();
-			}
-			
-			private static function onsavewav(e:Event):void
-			{
-				file = e.currentTarget as File;
-				
-				if (!fileHasExtension(file, "wav"))
-				{
-					addExtensionToFile(file, "wav");
-				}
-				
-				stream = new FileStream();
-				stream.open(file, FileMode.WRITE);
-				stream.writeBytes(_wav, 0, _wav.length);
-				stream.close();
-				
-				fixmouseclicks = true;
-				showmessage("SONG EXPORTED AS WAV");
-				savefilesettings();
-			}
-		
+			return true;
 		}
 		
-		CONFIG::web
+		public static function addExtensionToFile(file:File, extension:String):void
 		{
-			public static function invokeCeolWeb(ceolStr:String):void
+			file.url += "." + extension;
+		}
+		
+		public static function saveceol():void
+		{
+			if (!filepath)
 			{
-				changetab(MENUTAB_FILE);
-				if (ceolStr != "")
-				{
-					filestring = ceolStr;
-					loadfilestring(filestring);
-					showmessage("SONG LOADED");
-				}
-				else
-				{
-					newsong();
-				}
-				
-				_driver.play(null, false);
+				filepath = defaultDirectory;
+			}
+			file = filepath.resolvePath("*.ceol");
+			file.addEventListener(Event.SELECT, onsaveceol);
+			file.browseForSave("Save .ceol File");
+			
+			fixmouseclicks = true;
+		}
+		
+		private static function onsaveceol(e:Event):void
+		{
+			file = e.currentTarget as File;
+			
+			if (!fileHasExtension(file, "ceol"))
+			{
+				addExtensionToFile(file, "ceol");
 			}
 			
-			public static function getCeolString():String
-			{
-				makefilestring();
-				return filestring;
-			}
+			makefilestring();
+			
+			stream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeUTFBytes(filestring);
+			stream.close();
+			
+			fixmouseclicks = true;
+			showmessage("SONG SAVED");
+			savefilesettings();
 		}
+		
+		public static function loadceol():void
+		{
+			if (!filepath)
+			{
+				filepath = defaultDirectory;
+			}
+			file = filepath.resolvePath("");
+			file.addEventListener(Event.SELECT, onloadceol);
+			file.browseForOpen("Load .ceol File", [ceolFilter]);
+			
+			fixmouseclicks = true;
+		}
+		
+		public static function invokeceol(t:String):void
+		{
+			file = new File();
+			file.nativePath = t;
+			
+			stream = new FileStream();
+			stream.open(file, FileMode.READ);
+			filestring = stream.readUTFBytes(stream.bytesAvailable);
+			stream.close();
+			
+			loadfilestring(filestring);
+			_driver.play(null, false);
+			
+			fixmouseclicks = true;
+			showmessage("SONG LOADED");
+		}
+		
+		private static function onloadceol(e:Event):void
+		{
+			file = e.currentTarget as File;
+			filepath = file.resolvePath("");
+			
+			stream = new FileStream();
+			stream.open(file, FileMode.READ);
+			filestring = stream.readUTFBytes(stream.bytesAvailable);
+			stream.close();
+			
+			loadfilestring(filestring);
+			_driver.play(null, false);
+			
+			fixmouseclicks = true;
+			showmessage("SONG LOADED");
+			savefilesettings();
+		}
+		
+		public static function exportxm():void
+		{
+			stopmusic();
+			
+			if (!filepath)
+			{
+				filepath = defaultDirectory;
+			}
+			file = filepath.resolvePath("*.xm");
+			file.addEventListener(Event.SELECT, onexportxm);
+			file.browseForSave("Export .XM module file");
+			
+			fixmouseclicks = true;
+		}
+		
+		private static function onexportxm(e:Event):void
+		{
+			file = e.currentTarget as File;
+			
+			if (!fileHasExtension(file, "xm"))
+			{
+				addExtensionToFile(file, "xm");
+			}
+			
+			var xm:TrackerModuleXM = new TrackerModuleXM();
+			xm.loadFromLiveBoscaCeoilModel(file.name);
+			
+			stream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			xm.writeToStream(stream);
+			stream.close();
+			
+			fixmouseclicks = true;
+			showmessage("SONG EXPORTED AS XM");
+			savefilesettings();
+		}
+		
+		public static function exportmml():void
+		{
+			stopmusic();
+			
+			if (!filepath)
+			{
+				filepath = defaultDirectory;
+			}
+			file = filepath.resolvePath("*.mml");
+			file.addEventListener(Event.SELECT, onexportmml);
+			file.browseForSave("Export MML music text file");
+			
+			fixmouseclicks = true;
+		}
+		
+		private static function onexportmml(e:Event):void
+		{
+			file = e.currentTarget as File;
+			
+			if (!fileHasExtension(file, "mml"))
+			{
+				addExtensionToFile(file, "mml");
+			}
+			
+			var song:MMLSong = new MMLSong();
+			song.loadFromLiveBoscaCeoilModel();
+			
+			stream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			song.writeToStream(stream);
+			stream.close();
+			
+			fixmouseclicks = true;
+			showmessage("SONG EXPORTED AS MML");
+			savefilesettings();
+		}
+		
+		private static function onsavewav(e:Event):void
+		{
+			file = e.currentTarget as File;
+			
+			if (!fileHasExtension(file, "wav"))
+			{
+				addExtensionToFile(file, "wav");
+			}
+			
+			stream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeBytes(_wav, 0, _wav.length);
+			stream.close();
+			
+			fixmouseclicks = true;
+			showmessage("SONG EXPORTED AS WAV");
+			savefilesettings();
+		}
+	
+
 		
 		private static function loadfilestring(s:String):void
 		{
@@ -1942,24 +1899,13 @@
 			_data.position = 0;
 			_wav.writeBytes(_data);
 			
-			CONFIG::desktop
+			if (!filepath)
 			{
-				if (!filepath)
-				{
-					filepath = defaultDirectory;
-				}
-				file = filepath.resolvePath("*.wav");
-				file.addEventListener(Event.SELECT, onsavewav);
-				file.browseForSave("Export .wav File");
+				filepath = defaultDirectory;
 			}
-			
-			CONFIG::web
-			{
-				var b64:Base64Encoder = new Base64Encoder();
-				_wav.position = 0;
-				b64.encodeBytes(_wav);
-				ExternalInterface.call('Bosca._wavRecorded', b64.toString());
-			}
+			file = filepath.resolvePath("*.wav");
+			file.addEventListener(Event.SELECT, onsavewav);
+			file.browseForSave("Export .wav File");
 			
 			fixmouseclicks = true;
 		}
@@ -1979,10 +1925,7 @@
 			}
 		}
 		
-		CONFIG::desktop
-		{
-			public static var file:File, stream:FileStream;
-		}
+		public static var file:File, stream:FileStream;
 		public static var filestring:String, fi:int;
 		public static var filestream:Array;
 		public static var ceolFilter:FileFilter = new FileFilter("Ceol", "*.ceol");

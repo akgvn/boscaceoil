@@ -47,15 +47,7 @@ package
 	import flash.utils.getTimer;
 	import flash.utils.Timer;
 	import flash.events.InvokeEvent;
-	
-	CONFIG::desktop
-	{
-		import flash.desktop.NativeApplication;
-	}
-	CONFIG::web
-	{
-		import flash.external.ExternalInterface;
-	}
+	import flash.desktop.NativeApplication;
 	
 	public class Main extends Sprite
 	{
@@ -70,11 +62,8 @@ package
 			control.version = 3;            // Version number used by file
 			control.ctrl = "Ctrl"; //Set this to Cmd on Mac so that the tutorial is correct
 			
-			CONFIG::desktop
-			{
-				NativeApplication.nativeApplication.setAsDefaultApplication("ceol");
-				NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvokeEvent);
-			}
+			NativeApplication.nativeApplication.setAsDefaultApplication("ceol");
+			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvokeEvent);
 			
 			key = new KeyPoll(stage);
 			control.init();
@@ -82,10 +71,7 @@ package
 			//Working towards resolution independence!
 			gfx.init(stage);
 			
-			CONFIG::desktop
-			{
-				stage.addEventListener(Event.RESIZE, handleResize);
-			}
+			stage.addEventListener(Event.RESIZE, handleResize);
 			
 			var tempbmp:Bitmap;
 			tempbmp = new im_icons();
@@ -152,37 +138,7 @@ package
 				control.clicklist = true;
 			}
 			
-			CONFIG::desktop
-			{
-				_startMainLoop();
-			}
-			
-			CONFIG::web
-			{
-				if (ExternalInterface.available)
-				{
-					if (ExternalInterface.call("Bosca._isReady"))
-					{
-						_startMainLoopWeb();
-					}
-					else
-					{
-						// If the container is not ready, set up a Timer to call the
-						// container at 100ms intervals. Once the container responds that
-						// it's ready, the timer will be stopped.
-						var containerIsReadyTimer:Timer = new Timer(100);
-						containerIsReadyTimer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void
-						{
-							if (ExternalInterface.call("Bosca._isReady"))
-							{
-								Timer(e.target).stop();
-								_startMainLoopWeb();
-							}
-						});
-						containerIsReadyTimer.start();
-					}
-				}
-			}
+			_startMainLoop();
 		}
 		
 		private function handleResize(e:Event):void
@@ -234,16 +190,8 @@ package
 		
 		private function _startMainLoop():void
 		{
-			CONFIG::desktop
-			{
-				NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, __activate__);
-				NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, __deactivate__);
-			}
-			CONFIG::web
-			{
-				addEventListener(Event.DEACTIVATE, __activate__);
-				addEventListener(Event.ACTIVATE, __deactivate__);
-			}
+			NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, __activate__);
+			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, __deactivate__);
 			
 			_timer.addEventListener(TimerEvent.TIMER, mainloop);
 			_timer.start();
@@ -258,23 +206,7 @@ package
 		{
 			gfx.changeframerate(1);
 		}
-		
-		CONFIG::web
-		{
-			private function _startMainLoopWeb():void
-			{
-				// Expose some functions to external JS
-				ExternalInterface.addCallback("getCeolString", control.getCeolString);
-				ExternalInterface.addCallback("invokeCeolWeb", control.invokeCeolWeb);
-				ExternalInterface.addCallback("newSong", control.newsong);
-				ExternalInterface.addCallback("exportWav", control.exportwav);
-				
-				control.invokeCeolWeb(ExternalInterface.call("Bosca._getStartupCeol"));
-				
-				_startMainLoop();
-			}
-		}
-		
+
 		public function _input():void
 		{
 			if (gfx.scalemode == 1)
@@ -348,32 +280,29 @@ package
 			
 			control.savescreensettings();
 		}
-		
-		CONFIG::desktop
+	
+		public function onInvokeEvent(event:InvokeEvent):void
 		{
-			public function onInvokeEvent(event:InvokeEvent):void
+			if (event.arguments.length > 0)
 			{
-				if (event.arguments.length > 0)
+				if (event.currentDirectory != null)
 				{
-					if (event.currentDirectory != null)
-					{
-						// set file directory to current directory
-						control.filepath = event.currentDirectory;
-					}
-					if (control.startup == 0)
-					{
-						//Loading a song at startup, wait until the sound is initilised
-						control.invokefile = event.arguments[0];
-					}
-					else
-					{
-						//Program is up and running, just load now
-						control.invokeceol(event.arguments[0]);
-					}
+					// set file directory to current directory
+					control.filepath = event.currentDirectory;
+				}
+				if (control.startup == 0)
+				{
+					//Loading a song at startup, wait until the sound is initilised
+					control.invokefile = event.arguments[0];
+				}
+				else
+				{
+					//Program is up and running, just load now
+					control.invokeceol(event.arguments[0]);
 				}
 			}
 		}
-		
+	
 		public var key:KeyPoll;
 		
 		// Timer information (a shout out to ChevyRay for the implementation)

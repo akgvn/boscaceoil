@@ -251,14 +251,10 @@
 					
 					if (control.list.type == control.LIST_MOREEXPORTS) {
 						if (control.list.selection == 0) {
-							CONFIG::desktop {
-								control.exportxm();
-							}
+							control.exportxm();
 						}else if (control.list.selection == 1) {
 							// TODO: enable for web usage too (it's just text!)
-							CONFIG::desktop {
-								control.exportmml();
-							}
+							control.exportmml();
 						}
 						control.list.close();
 					}
@@ -268,9 +264,7 @@
 						if (control.list.selection == 0) {
 							control.exportwav();
 						}else if (control.list.selection == 1) {
-							CONFIG::desktop {
-								midicontrol.savemidi();
-							}
+							midicontrol.savemidi();
 						}else if (control.list.selection == 2) {
 							control.filllist(control.LIST_MOREEXPORTS);
 							control.list.init(gfx.screenwidth - 170 - ((gfx.screenwidth - 768) / 4), (gfx.linespacing * 4) - 14);
@@ -285,7 +279,6 @@
 				control.clicklist = true;
 			}else if (control.my <= gfx.linesize) {
 				//Change tabs
-	      CONFIG::desktop {
 					if (control.mx < (gfx.screenwidth - 40) / 4) {
 						control.changetab(control.MENUTAB_FILE);
 					}else if (control.mx < (2 * (gfx.screenwidth - 40)) / 4) {
@@ -301,19 +294,7 @@
 					}else{
 						control.changetab(control.MENUTAB_ADVANCED);
 					}
-				}
-				
-				CONFIG::web {
-					if (control.mx < (gfx.screenwidth) / 4) {
-						control.changetab(control.MENUTAB_FILE);
-					}else if (control.mx < (2 * (gfx.screenwidth)) / 4) {
-						control.changetab(control.MENUTAB_ARRANGEMENTS);
-					}else if (control.mx < (3 * (gfx.screenwidth)) / 4) {
-						control.changetab(control.MENUTAB_INSTRUMENTS);
-					}else{
-						control.changetab(control.MENUTAB_ADVANCED);
-					}
-				}
+
 			}else if (control.my > gfx.linesize && control.my < gfx.pianorollposition + 20) {				
 				if (control.currenttab == control.MENUTAB_ARRANGEMENTS) {
 					//Arrangements
@@ -714,9 +695,7 @@
 		guiclass.helpcondition_set = "nothing";
 	}
 	
-	CONFIG::desktop {
 		if (key.isDown(Keyboard.ESCAPE)) {
 			NativeApplication.nativeApplication.exit(0);
 		}
-	}
 }

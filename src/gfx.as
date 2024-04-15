@@ -5,9 +5,7 @@
   import flash.net.*;
 	import flash.text.*;
 	import flash.utils.Dictionary;
-	CONFIG::desktop {
-		import flash.display.NativeWindow;
-	}
+	import flash.display.NativeWindow;
 	
 	public class gfx extends Sprite {
 		public static function init(_stage:Stage):void {
@@ -35,15 +33,11 @@
 			if (t == 0) {
 				min_windowwidth = 768;
 				min_windowheight = 540;
-				CONFIG::desktop {
-					stage.nativeWindow.minSize = new Point(768 + windowboundsx, 540 + windowboundsy);
-				}
+				stage.nativeWindow.minSize = new Point(768 + windowboundsx, 540 + windowboundsy);
 			}else {
 				min_windowwidth = 1152;
 				min_windowheight = 690;
-				CONFIG::desktop {
-					stage.nativeWindow.minSize = new Point(1152 + windowboundsx, 690 + windowboundsy);
-				}
+				stage.nativeWindow.minSize = new Point(1152 + windowboundsx, 690 + windowboundsy);
 			}
 			
 			scalemode = t;
@@ -804,48 +798,30 @@
 			patternwidth = 44 + (zoom * 16);
 		}
 		
-		CONFIG::desktop {
-			public static function changewindowsize(w:int, h:int):void {
-				//if (w < 768) w = 768;
-				//if (h < 480) h = 480;
-				windowboundsx = stage.nativeWindow.bounds.width - stage.stageWidth;
-				windowboundsy = stage.nativeWindow.bounds.height - stage.stageHeight;
-				windowwidth = w;
-				windowheight = h;
-				if (control.fullscreen) {
-					
-				}else{
-					if (stage && stage.nativeWindow) {
-						stage.nativeWindow.width = w + windowboundsx;
-						stage.nativeWindow.height = h + windowboundsy;
-					}
-				}
+		public static function changewindowsize(w:int, h:int):void {
+			//if (w < 768) w = 768;
+			//if (h < 480) h = 480;
+			windowboundsx = stage.nativeWindow.bounds.width - stage.stageWidth;
+			windowboundsy = stage.nativeWindow.bounds.height - stage.stageHeight;
+			windowwidth = w;
+			windowheight = h;
+			if (control.fullscreen) {
 				
-				if (gfx.scalemode == 1) {
-					screenwidth = w/1.5; screenheight = h/1.5;	
-				}else {
-					screenwidth = w; screenheight = h;	
+			}else{
+				if (stage && stage.nativeWindow) {
+					stage.nativeWindow.width = w + windowboundsx;
+					stage.nativeWindow.height = h + windowboundsy;
 				}
-				
-				screenwidthmid = screenwidth / 2; screenheightmid = screenheight / 2;
-				screenviewwidth = screenwidth; screenviewheight = screenheight;		
 			}
-		}
-
-		CONFIG::web {
-			public static function changewindowsize(w:int, h:int):void {
-				windowwidth = w;
-				windowheight = h;
-
-				if (gfx.scalemode == 1) {
-					screenwidth = w/1.5; screenheight = h/1.5;
-				}else {
-					screenwidth = w; screenheight = h;
-				}
-
-				screenwidthmid = screenwidth / 2; screenheightmid = screenheight / 2;
-				screenviewwidth = screenwidth; screenviewheight = screenheight;
+			
+			if (gfx.scalemode == 1) {
+				screenwidth = w/1.5; screenheight = h/1.5;	
+			}else {
+				screenwidth = w; screenheight = h;	
 			}
+			
+			screenwidthmid = screenwidth / 2; screenheightmid = screenheight / 2;
+			screenviewwidth = screenwidth; screenviewheight = screenheight;		
 		}
 
 		public static function settrect(x:int, y:int, w:int, h:int):void {

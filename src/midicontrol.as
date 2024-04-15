@@ -1,14 +1,12 @@
 // temporary: ignore the entire contents of this file when building for web
-CONFIG::desktop {
 package {
 	import flash.display.*;
 	import flash.geom.*;
-  import flash.events.*;
+	import flash.events.*;
 	import flash.utils.*;
-  import flash.net.*;
+	import flash.net.*;
 	import flash.filesystem.*;
 	import org.si.sion.midi.*;
-	import org.si.sion.events.*;
 	
 	public class midicontrol {
 		public static var MIDIDRUM_35_Acoustic_Bass_Drum:int = 35;
@@ -750,9 +748,7 @@ package {
 			return control.voicelist.midimap[t];
 		}
 		
-		CONFIG::desktop {
-			public static var file:File, stream:FileStream;
-		}
+		public static var file:File, stream:FileStream;
 		
 		public static var mididata:ByteArray;
 		public static var resolution:Number;
@@ -772,5 +768,4 @@ package {
 		public static var tempbytes:ByteArray;
 		public static var midiexporter:Midiexporter;
 	}
-}
 }
