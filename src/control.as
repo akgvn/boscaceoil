@@ -7,8 +7,14 @@
 	import flash.net.*;
 	import org.si.sion.SiONDriver;
 	import org.si.sion.utils.SiONPresetVoice;
-	import org.si.sion.effector.*;
-	import org.si.sion.events.*;
+	import org.si.sion.effector.SiEffectStereoDelay;
+	import org.si.sion.effector.SiEffectStereoChorus;
+	import org.si.sion.effector.SiEffectStereoReverb;
+	import org.si.sion.effector.SiEffectDistortion;
+	import org.si.sion.effector.SiFilterLowBoost;
+	import org.si.sion.effector.SiEffectCompressor;
+	import org.si.sion.effector.SiCtrlFilterHighPass;
+	import org.si.sion.events.SiONEvent;
 	import flash.filesystem.*;
 	import flash.net.FileFilter;
 	

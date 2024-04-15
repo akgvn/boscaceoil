@@ -6,7 +6,9 @@ package {
 	import flash.utils.*;
 	import flash.net.*;
 	import flash.filesystem.*;
-	import org.si.sion.midi.*;
+	import org.si.sion.midi.SMFTrack;
+	import org.si.sion.midi.SMFEvent;
+	import org.si.sion.midi.SMFData;
 	
 	public class midicontrol {
 		public static var MIDIDRUM_35_Acoustic_Bass_Drum:int = 35;
